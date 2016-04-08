@@ -164,7 +164,8 @@ enum AddressMappingScheme
 enum RowBufferPolicy
 {
 	OpenPage,
-	ClosePage
+	ClosePage,
+	InOrder
 };
 
 // Only used in CommandQueue

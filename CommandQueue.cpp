@@ -530,6 +530,10 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			}
 		}
 	}
+	else if (rowBufferPolicy == InOrder)
+	{
+		
+	}
 
 	//sendAct is flag used for posted-cas
 	//  posted-cas is enabled when AL>0

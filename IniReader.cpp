@@ -590,9 +590,17 @@ void IniReader::InitEnumsFromStrings()
 			DEBUG("ROW BUFFER: close page");
 		}
 	}
+	else if (ROW_BUFFER_POLICY == "in_order")
+	{
+		rowBufferPolicy = InOrder;
+		if (DEBUG_INI_READER)
+		{
+			DEBUG("ROW BUFFER: in order");
+		}
+	}
 	else
 	{
-		cout << "WARNING: unknown row buffer policy '"<<ROW_BUFFER_POLICY<<"'; valid values are 'open_page' or 'close_page', Defaulting to Close Page."<<endl;
+		cout << "WARNING: unknown row buffer policy '"<<ROW_BUFFER_POLICY<<"'; valid values are 'open_page', 'close_page', or 'in_order', Defaulting to Close Page."<<endl;
 		rowBufferPolicy = ClosePage;
 	}
 
