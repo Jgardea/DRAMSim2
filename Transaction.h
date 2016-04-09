@@ -71,7 +71,7 @@ public:
 		switch (transactionType)
 		{
 			case DATA_READ:
-			if (rowBufferPolicy == ClosePage)
+			if (rowBufferPolicy == ClosePage || rowBufferPolicy == InOrder)
 			{
 				return READ_P;
 			}
@@ -86,7 +86,7 @@ public:
 			}
 			break;
 		case DATA_WRITE:
-			if (rowBufferPolicy == ClosePage)
+			if (rowBufferPolicy == ClosePage || rowBufferPolicy == InOrder)
 			{
 				return WRITE_P;
 			}

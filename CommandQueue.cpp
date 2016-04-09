@@ -46,6 +46,10 @@
 
 using namespace DRAMSim;
 
+size_t cq_io_last_rank = 0;
+size_t cq_io_last_bank = 0;
+size_t cq_io_last_row = 0;
+
 CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim_log_) :
 		dramsim_log(dramsim_log_),
 		bankStates(states),
@@ -532,7 +536,30 @@ bool CommandQueue::pop(BusPacket **busPacket)
 	}
 	else if (rowBufferPolicy == InOrder)
 	{
-		
+		bool foundIssuable = false;
+		for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
+		{
+			for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
+			{
+				for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
+				{
+					size_t x = (i + cq_io_last_rank) % queues.size();
+					size_t y = (j + cq_io_last_bank) % queues[x].size();
+					size_t z = (k + cq_io_last_row) % queues[x][y].size();
+					if (isIssuable(queues[x][y][z]))
+					{
+						*busPacket = queues[x][y][z];
+						queues[x][y].erase(queues[x][y].begin() + z);
+						foundIssuable = true;
+						cq_io_last_rank = x;
+						cq_io_last_bank = y;
+						cq_io_last_row = z;
+					}
+				}
+			}
+		}
+		//if we couldn't find anything to send, return false
+		if (!foundIssuable) return false;
 	}
 
 	//sendAct is flag used for posted-cas
