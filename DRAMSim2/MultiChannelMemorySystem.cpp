@@ -234,7 +234,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 
 			if (pwd.length() > 0)
 			{
-				path = pwd + "/" + path;
+				//path = pwd + "/" + path;
 			}
 
 			// create the directories if they don't exist 
