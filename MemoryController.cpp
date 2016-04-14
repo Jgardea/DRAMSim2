@@ -857,10 +857,21 @@ void MemoryController::printStats(bool finalStats)
 		PRINT( " ("<<totalReadsPerRank[r] * bytesPerTransaction<<" bytes)");
 		PRINTN( "        -Writes : " << totalWritesPerRank[r]);
 		PRINT( " ("<<totalWritesPerRank[r] * bytesPerTransaction<<" bytes)");
+
+        double totalAvgLatency = 0.0; // jgardea
+        double throughput = 0.0; //jgardea 
+
 		for (size_t j=0;j<NUM_BANKS;j++)
 		{
+            totalAvgLatency += averageLatency[SEQUENTIAL(r,j)]; //jgardea
 			PRINT( "        -Bandwidth / Latency  (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] << " GB/s\t\t" <<averageLatency[SEQUENTIAL(r,j)] << " ns");
 		}
+        
+        totalAvgLatency /= 8; 
+        throughput = totalAvgLatency * totalAggregateBandwidth;  
+
+        PRINT ( "Total Avgerage Latency =  " << totalAvgLatency );
+        PRINT ( "Total Avgerage Throughput =  " << totalAvgLatency ); 
 
 		// factor of 1000 at the end is to account for the fact that totalEnergy is accumulated in mJ since IDD values are given in mA
 		backgroundPower[r] = ((double)backgroundEnergy[r] / (double)(cyclesElapsed)) * Vdd / 1000.0;
