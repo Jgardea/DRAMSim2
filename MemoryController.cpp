@@ -871,7 +871,7 @@ void MemoryController::printStats(bool finalStats)
         throughput = totalAvgLatency * totalAggregateBandwidth;  
 
         PRINT ( "Total Avgerage Latency =  " << totalAvgLatency );
-        PRINT ( "Total Avgerage Throughput =  " << totalAvgLatency ); 
+        PRINT ( "Total Avgerage Throughput =  " << througput ); 
 
 		// factor of 1000 at the end is to account for the fact that totalEnergy is accumulated in mJ since IDD values are given in mA
 		backgroundPower[r] = ((double)backgroundEnergy[r] / (double)(cyclesElapsed)) * Vdd / 1000.0;
