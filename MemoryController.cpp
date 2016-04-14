@@ -867,8 +867,8 @@ void MemoryController::printStats(bool finalStats)
 			PRINT( "        -Bandwidth / Latency  (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] << " GB/s\t\t" <<averageLatency[SEQUENTIAL(r,j)] << " ns");
 		}
         
-        totalAvgLatency /= 8; 
-        throughput = totalAvgLatency * totalAggregateBandwidth;  
+        totalAvgLatency /= NUM_BANKS; 
+        throughput = totalAvgLatency * totalBandwidth;  
 
         PRINT ( "Total Avgerage Latency =  " << totalAvgLatency );
         PRINT ( "Total Avgerage Throughput =  " << throughput ); 
