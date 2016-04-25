@@ -35,6 +35,7 @@
 //Class file for memory controller object
 //
 
+#include <cmath>
 #include "MemoryController.h"
 #include "MemorySystem.h"
 #include "AddressMapping.h"
@@ -421,7 +422,6 @@ void MemoryController::update()
 					PRINT(" ++ Adding Activate and Precharge energy to total energy");
 				}
 				actpreEnergy[rank] += ((IDD0 * tRC) - ((IDD3N * tRAS) + (IDD2N * (tRC - tRAS)))) * NUM_DEVICES;
-
 				bankStates[rank][bank].currentBankState = RowActive;
 				bankStates[rank][bank].lastCommand = ACTIVATE;
 				bankStates[rank][bank].openRowAddress = poppedBusPacket->row;
@@ -540,7 +540,29 @@ void MemoryController::update()
 					newTransactionColumn, newTransactionRow, newTransactionRank,
 					newTransactionBank, transaction->data, dramsim_log);
 
+      /*string type;
+      switch ( bpType )
+      {
+        case 0:
+        case 1:
+          type = "read";                //DEBUGGING
+          break;
+        case 2:
+        case 3:
+          type = "write";
+          break;
+        //default:
 
+      }
+      if (  bankStates[newTransactionRank][newTransactionBank].currentBankState == RowActive ) //jgardea
+      {
+        cout << "New Command(Row Active)" << endl;
+        cout << "Type : " << type << endl;
+      }else
+      {
+        cout << "New Command" << endl;
+        cout << "Type : " << type << endl;
+      }*/
 
 			commandQueue.enqueue(ACTcommand);
 			commandQueue.enqueue(command);
@@ -848,6 +870,11 @@ void MemoryController::printStats(bool finalStats)
 	PRINTN( "   Total Return Transactions : " << totalTransactions );
 	PRINT( " ("<<totalBytesTransferred <<" bytes) aggregate average bandwidth "<<totalBandwidth<<"GB/s");
 
+  vector<int> rowBufferAccessPerBank;
+  int totalAccesses = 0;
+  int totalRankAccesses = 0;
+  int totalHits = 0;
+
 	double totalAggregateBandwidth = 0.0;	
 	for (size_t r=0;r<NUM_RANKS;r++)
 	{
@@ -858,20 +885,35 @@ void MemoryController::printStats(bool finalStats)
 		PRINTN( "        -Writes : " << totalWritesPerRank[r]);
 		PRINT( " ("<<totalWritesPerRank[r] * bytesPerTransaction<<" bytes)");
 
-        double totalAvgLatency = 0.0; // jgardea
-        double throughput = 0.0; //jgardea 
-
+    double totalAvgLatency = 0.0; // jgardea
+     
 		for (size_t j=0;j<NUM_BANKS;j++)
 		{
-            totalAvgLatency += averageLatency[SEQUENTIAL(r,j)]; //jgardea
-			PRINT( "        -Bandwidth / Latency  (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] << " GB/s\t\t" <<averageLatency[SEQUENTIAL(r,j)] << " ns");
-		}
-        
-        totalAvgLatency /= NUM_BANKS; 
-        throughput = totalAvgLatency * totalBandwidth;  
+      totalAccesses = commandQueue.rowBufferStats[j].first + commandQueue.rowBufferStats[j].second;
+      totalHits += commandQueue.rowBufferStats[j].first;
 
-        PRINT ( "Total Avgerage Latency =  " << totalAvgLatency );
-        PRINT ( "Total Avgerage Throughput =  " << throughput ); 
+      if ( totalAccesses == 0 )
+        totalAccesses = 1;
+      else 
+        totalRankAccesses += totalAccesses;
+
+      rowBufferAccessPerBank.push_back(totalAccesses);
+
+      if ( !isnan(averageLatency[SEQUENTIAL(r,j)]) )
+        totalAvgLatency += averageLatency[SEQUENTIAL(r,j)]; //jgardea
+
+      if ( isnan(averageLatency[SEQUENTIAL(r,j)]) ) averageLatency[SEQUENTIAL(r,j)] = 0;
+
+      PRINT( "        -Bandwidth / Latency / RBHR (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] 
+              << " GB/s\t" << averageLatency[SEQUENTIAL(r,j)] << " ns\t" 
+              << (double) commandQueue.rowBufferStats[j].first/totalAccesses << "  Hits/Access" );
+		}
+   
+        
+    totalAvgLatency /= NUM_BANKS; //jgardea
+    PRINT ( "     -Total Avgerage Latency =  " << totalAvgLatency << " ns"); //jgardea
+    PRINT ( "     -Total Hit Rate = " << (double)totalHits/totalRankAccesses << " Hits/Access");
+
 
 		// factor of 1000 at the end is to account for the fact that totalEnergy is accumulated in mJ since IDD values are given in mA
 		backgroundPower[r] = ((double)backgroundEnergy[r] / (double)(cyclesElapsed)) * Vdd / 1000.0;

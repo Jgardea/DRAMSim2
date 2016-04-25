@@ -41,6 +41,8 @@
 //Header
 //
 
+#include <utility>
+
 #include "BusPacket.h"
 #include "BankState.h"
 #include "Transaction.h"
@@ -79,6 +81,8 @@ public:
 	
 	BusPacket3D queues; // 3D array of BusPacket pointers
 	vector< vector<BankState> > &bankStates;
+  // Row Buffer <hit, miss>
+  vector< pair <int, int> > rowBufferStats; // jgardea, implemented only for one rank
 private:
 	void nextRankAndBank(unsigned &rank, unsigned &bank);
 	//fields

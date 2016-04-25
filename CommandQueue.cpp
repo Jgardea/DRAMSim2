@@ -28,13 +28,6 @@
 *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************/
 
-
-
-
-
-
-
-
 //CommandQueue.cpp
 //
 //Class file for command queue object
@@ -97,7 +90,14 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 		}
 		queues.push_back(perBankQueue);
 	}
+  
+  pair<int,int> bankRowBuffer;
 
+  for ( unsigned i = 0; i < NUM_BANKS; i++ )
+  {
+    bankRowBuffer = make_pair(0,0);
+    rowBufferStats.push_back(bankRowBuffer);
+  }
 
 	//FOUR-bank activation window
 	//	this will count the number of activations within a given window
@@ -444,6 +444,10 @@ bool CommandQueue::pop(BusPacket **busPacket)
 							//	that activate as well (check i>0 because if i==0 then theres nothing before it)
 							if (i>0 && queue[i-1]->busPacketType == ACTIVATE)
 							{
+                // if we issued the read/write operation before the activate command 
+                // then the row was already open. Row Buffer hit //jgardea
+                rowBufferStats[packet->bank].first++;
+
 								rowAccessCounters[(*busPacket)->rank][(*busPacket)->bank]++;
 								// i is being returned, but i-1 is being thrown away, so must delete it here 
 								delete (queue[i-1]);
@@ -666,6 +670,7 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
 		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
 		        tFAWCountdown[busPacket->rank].size() < 4)
 		{
+      rowBufferStats[busPacket->bank].second++;
 			return true;
 		}
 		else
