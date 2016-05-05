@@ -57,6 +57,9 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 	//set here to avoid compile errors
 	currentClockCycle = 0;
 
+  currentBank = 0;
+  currentRow = 0;
+
 	//use numBankQueus below to create queue structure
 	size_t numBankQueues;
 	if (queuingStructure==PerRank)
@@ -91,14 +94,14 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 		queues.push_back(perBankQueue);
 	}
 
-	for (int i = 0; i < NUM_BANKS; ++i)
+	for (unsigned int i = 0; i < NUM_BANKS; ++i)
 	{
 		vector< pair<unsigned, unsigned> > row;
 		memRowAccessCounter.push_back(row);
 	}
 
   
-  pair<int,int> bankRowBuffer;
+  pair<int,int> bankRowBuffer;    //jgardea
 
   for ( unsigned i = 0; i < NUM_BANKS; i++ )
   {
@@ -601,27 +604,31 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				sendingREF = true;
 			}
 		} // refreshWaiting
-		for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
-		{
-			for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
-			{
-				for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
-				{
-					size_t x = (i + cq_io_last_rank) % queues.size();
-					size_t y = (j + cq_io_last_bank) % queues[x].size();
-					size_t z = (k + cq_io_last_row) % queues[x][y].size();
-					if (isIssuable(queues[x][y][z]))
-					{
-						*busPacket = queues[x][y][z];
-						queues[x][y].erase(queues[x][y].begin() + z);
-						foundIssuable = true;
-						cq_io_last_rank = x;
-						cq_io_last_bank = y;
-						cq_io_last_row = z;
-					}
-				}
-			}
-		}
+
+    if ( sendingREF )
+    {
+      for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
+      {
+        for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
+        {
+          for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
+          {
+            size_t x = (i + cq_io_last_rank) % queues.size();
+            size_t y = (j + cq_io_last_bank) % queues[x].size();
+            size_t z = (k + cq_io_last_row) % queues[x][y].size();
+            if (isIssuable(queues[x][y][z]))
+            {
+              *busPacket = queues[x][y][z];
+              queues[x][y].erase(queues[x][y].begin() + z);
+              foundIssuable = true;
+              cq_io_last_rank = x;
+              cq_io_last_bank = y;
+              cq_io_last_row = z;
+            }
+          }
+        }
+      }
+    }  
 		//if we couldn't find anything to send, return false
 		if (!foundIssuable) return false;
 	}
@@ -708,10 +715,17 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			//make sure there is something there first
 			if (!queue.empty() && !((nextRank == refreshRank) && refreshWaiting))
 			{
+        //cout << "queue size: " << queue.size() << endl;
+        if ( queue.size() == 1 ) // base case to initialize currentBank & currentRow  //jgardea
+        {
+          currentBank = queue[0]->bank;
+          currentRow = queue[0]->row;
+        }
+        
 				//search from the beginning to find first issuable bus packet
 				unsigned next_bank = 0;
 				unsigned next_row = 0;
-				int number_pending = -1;
+				unsigned number_pending = 0;
 				for (size_t i = 0; i < NUM_BANKS; ++i)
 				{
 					for (size_t j = 0; j < memRowAccessCounter[i].size(); ++j)
@@ -724,6 +738,16 @@ bool CommandQueue::pop(BusPacket **busPacket)
 						}
 					}
 				}
+        
+        if ( currentBank != next_bank && currentRow != next_row )
+        {
+          *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
+          currentBank = next_bank;
+          currentRow = next_row;
+          return true;
+
+        }
+
 				for (size_t i=0;i<queue.size();i++)
 				{
 					BusPacket *packet = queue[i];
@@ -773,7 +797,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 						break;
 					}
 				}
-			}
+     }// end of not seding REF
 
 			//if nothing was issuable, see if we can issue a PRE to an open bank
 			//	that has no other commands waiting

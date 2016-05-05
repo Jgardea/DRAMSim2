@@ -99,6 +99,9 @@ private:
 	unsigned refreshRank;
 	bool refreshWaiting;
 
+  unsigned currentBank; //jgardea
+  unsigned currentRow;
+
 	vector< vector<unsigned> > tFAWCountdown;
 	vector< vector<unsigned> > rowAccessCounters;
 

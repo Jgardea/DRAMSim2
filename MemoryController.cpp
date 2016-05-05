@@ -39,6 +39,7 @@
 #include "MemoryController.h"
 #include "MemorySystem.h"
 #include "AddressMapping.h"
+#include <cassert> //jgardea
 
 #define SEQUENTIAL(rank,bank) (rank*NUM_BANKS)+bank
 
@@ -292,20 +293,28 @@ void MemoryController::update()
 			                                    poppedBusPacket->data, dramsim_log));
 			writeDataCountdown.push_back(WL);
 		}
+    
+		cout << "Bank: " << poppedBusPacket->bank << endl;
+    cout << "Row: " << poppedBusPacket->row << endl;
+    
+    // remove the row access counter
 
-		// remove the row access counter
-		for (unsigned i = 0; i < commandQueue.memRowAccessCounter[poppedBusPacket->bank].size(); ++i)
-		{
-			if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].first == poppedBusPacket->row)
-			{
-				commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second--;
-				if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second == 0)
-				{
-					commandQueue.memRowAccessCounter[poppedBusPacket->bank].erase(commandQueue.memRowAccessCounter[poppedBusPacket->bank].begin() + i);
-				}
-			}
-		}
+   int packetType = poppedBusPacket->busPacketType;
 
+   if ( packetType == READ || packetType == WRITE )  {
+      for (unsigned i = 0; i < commandQueue.memRowAccessCounter[poppedBusPacket->bank].size(); ++i)
+      {
+        if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].first == poppedBusPacket->row)
+        {
+          commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second--;
+          if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second == 0)
+          {
+            commandQueue.memRowAccessCounter[poppedBusPacket->bank].erase(commandQueue.memRowAccessCounter[poppedBusPacket->bank].begin() + i);
+          }
+        }
+      }
+   }
+		
 		//
 		//update each bank's state based on the command that was just popped out of the command queue
 		//
@@ -456,11 +465,12 @@ void MemoryController::update()
 
 				break;
 			case PRECHARGE:
+        cout << "Handling PRECHARGE" << endl;
 				bankStates[rank][bank].currentBankState = Precharging;
 				bankStates[rank][bank].lastCommand = PRECHARGE;
 				bankStates[rank][bank].stateChangeCountdown = tRP;
 				bankStates[rank][bank].nextActivate = max(currentClockCycle + tRP, bankStates[rank][bank].nextActivate);
-
+        cout << "Got here " <<  endl;
 				break;
 			case REFRESH:
 				//add energy to account for total
@@ -553,34 +563,12 @@ void MemoryController::update()
 					newTransactionColumn, newTransactionRow, newTransactionRank,
 					newTransactionBank, transaction->data, dramsim_log);
 
-      /*string type;
-      switch ( bpType )
-      {
-        case 0:
-        case 1:
-          type = "read";                //DEBUGGING
-          break;
-        case 2:
-        case 3:
-          type = "write";
-          break;
-        //default:
+   
+      assert ( bpType == READ || bpType == WRITE); //jgardea
 
-      }
-      if (  bankStates[newTransactionRank][newTransactionBank].currentBankState == RowActive ) //jgardea
-      {
-        cout << "New Command(Row Active)" << endl;
-        cout << "Type : " << type << endl;
-      }else
-      {
-        cout << "New Command" << endl;
-        cout << "Type : " << type << endl;
-      }*/
+      //TODO Not sure if counter are updated correctly
 
-			commandQueue.enqueue(ACTcommand);
-			commandQueue.enqueue(command);
-
-			unsigned tmp_counter = 0;
+      unsigned tmp_counter = 0;
 			for (unsigned i = 0; i < commandQueue.memRowAccessCounter[newTransactionBank].size(); ++i)
 			{
 				if (commandQueue.memRowAccessCounter[newTransactionBank][i].first == newTransactionRow)
@@ -594,6 +582,11 @@ void MemoryController::update()
 				pair<unsigned, unsigned> tmp_pair = std::make_pair(newTransactionRow, ++tmp_counter);
 				commandQueue.memRowAccessCounter[newTransactionBank].push_back(tmp_pair);
 			}
+
+			commandQueue.enqueue(ACTcommand);
+			commandQueue.enqueue(command);
+
+			
 
 			// If we have a read, save the transaction so when the data comes back
 			// in a bus packet, we can staple it back into a transaction and return it

@@ -165,7 +165,6 @@ void *parseTraceFileLine(string &line, uint64_t &addr, enum TransactionType &tra
 	case k6:
 	{
 		spaceIndex = line.find_first_of(" ", 0);
-    cout << "spaceIndex: " << spaceIndex << endl;
 		addressStr = line.substr(0, spaceIndex);
 		previousIndex = spaceIndex;
 
