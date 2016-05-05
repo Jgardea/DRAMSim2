@@ -572,6 +572,10 @@ bool CommandQueue::pop(BusPacket **busPacket)
 		//if we couldn't find anything to send, return false
 		if (!foundIssuable) return false;
 	}
+	else if (rowBufferPolicy == MostPending)
+	{
+		
+	}
 
 	//sendAct is flag used for posted-cas
 	//  posted-cas is enabled when AL>0

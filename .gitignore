@@ -7,3 +7,8 @@ results/
 DRAMSim
 libdramsim.a
 libdramsim.so
+system2.ini
+# results files
+*.res
+# Mac Files
+.DS_Store

@@ -166,7 +166,8 @@ enum RowBufferPolicy
 {
 	OpenPage,
 	ClosePage,
-	InOrder
+	InOrder,
+	MostPending
 };
 
 // Only used in CommandQueue
