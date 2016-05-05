@@ -81,8 +81,12 @@ public:
 	
 	BusPacket3D queues; // 3D array of BusPacket pointers
 	vector< vector<BankState> > &bankStates;
-  // Row Buffer <hit, miss>
-  vector< pair <int, int> > rowBufferStats; // jgardea, implemented only for one rank
+    // Row Buffer <hit, miss>
+    vector< pair <int, int> > rowBufferStats; // jgardea, implemented only for one rank
+
+	// to count row accesses for use in Most Pending
+	vector < vector< pair<unsigned,unsigned> > > memRowAccessCounter;
+
 private:
 	void nextRankAndBank(unsigned &rank, unsigned &bank);
 	//fields
