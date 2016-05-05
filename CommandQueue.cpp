@@ -744,13 +744,14 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				//cout << endl << endl << endl;
 				//cout << "Next is bank " << next_bank << " row " << next_row << " and has " << number_pending << " pending requests." << endl;
         //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-		//cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
-        if ( (currentBank != next_bank || currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) )
+		if ( (currentBank != next_bank || currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
         {
+          //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
+          //cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
           *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
           currentBank = next_bank;
           currentRow = next_row;
-          cout << "running precharge..." << endl;
+          //cout << "running precharge..." << endl;
           return true;
 
         }
@@ -760,11 +761,11 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				{
 					BusPacket *packet = queue[i];
 
-					cout << "packet->bank " << packet->bank << " next_bank " << next_bank << " packet->row " << packet->row << " next_row " << next_row << " isIssuable(packet) " << isIssuable(packet) << " packet type " << packet->busPacketType << endl;
+					//cout << "packet->bank " << packet->bank << " next_bank " << next_bank << " packet->row " << packet->row << " next_row " << next_row << " isIssuable(packet) " << isIssuable(packet) << " packet type " << packet->busPacketType << endl;
 
 					if (packet->bank == next_bank && packet->row == next_row && isIssuable(packet))
 					{
-						cout << " running the if statement " << endl;
+						//cout << " running the if statement " << endl;
 						//check for dependencies
 						bool dependencyFound = false;
 						for (size_t j=0;j<i;j++)

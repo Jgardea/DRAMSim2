@@ -294,8 +294,8 @@ void MemoryController::update()
 			writeDataCountdown.push_back(WL);
 		}
     
-		cout << "Bank: " << poppedBusPacket->bank << endl;
-    cout << "Row: " << poppedBusPacket->row << endl;
+		//cout << "Bank: " << poppedBusPacket->bank << endl;
+    //cout << "Row: " << poppedBusPacket->row << endl;
     
     // remove the row access counter
 
@@ -314,15 +314,15 @@ void MemoryController::update()
         }
       }
       // test what's in there......
-      std::cout << std::endl << std::endl << std::endl << std::endl;
-      for (unsigned i = 0; i < commandQueue.memRowAccessCounter.size(); ++i)
+      //std::cout << std::endl << std::endl << std::endl << std::endl;
+      /*for (unsigned i = 0; i < commandQueue.memRowAccessCounter.size(); ++i)
       {
       	for (unsigned j = 0; j < commandQueue.memRowAccessCounter[i].size(); ++j)
       	{
       		std::cout << "[deletion] Accessing bank " << i << " and row " << commandQueue.memRowAccessCounter[i][j].first << " currently has " << commandQueue.memRowAccessCounter[i][j].second << " pending requests." << std::endl;
       	}
-      }
-      std::cout << std::endl << std::endl << std::endl << std::endl;
+      }*/
+      //std::cout << std::endl << std::endl << std::endl << std::endl;
    }
 		
 		//
@@ -475,12 +475,12 @@ void MemoryController::update()
 
 				break;
 			case PRECHARGE:
-        cout << "Handling PRECHARGE" << endl;
+        //cout << "Handling PRECHARGE" << endl;
 				bankStates[rank][bank].currentBankState = Precharging;
 				bankStates[rank][bank].lastCommand = PRECHARGE;
 				bankStates[rank][bank].stateChangeCountdown = tRP;
 				bankStates[rank][bank].nextActivate = max(currentClockCycle + tRP, bankStates[rank][bank].nextActivate);
-        cout << "Got here " <<  endl;
+        //cout << "Got here " <<  endl;
 				break;
 			case REFRESH:
 				//add energy to account for total

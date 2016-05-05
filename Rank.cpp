@@ -243,6 +243,7 @@ void Rank::receiveFromBus(BusPacket *packet)
 		if (bankStates[packet->bank].currentBankState != RowActive ||
 		        currentClockCycle < bankStates[packet->bank].nextPrecharge)
 		{
+			cout << " bankStates[packet->bank].currentBankState " << bankStates[packet->bank].currentBankState << " RowActive " << RowActive << " currentClockCycle " << currentClockCycle << " bankStates[packet->bank].nextPrecharge " << bankStates[packet->bank].nextPrecharge;
 			ERROR("== Error - Rank " << id << " received a PRE when not allowed");
 			exit(0);
 		}
