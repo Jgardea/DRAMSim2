@@ -57,8 +57,9 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 	//set here to avoid compile errors
 	currentClockCycle = 0;
 
-  currentBank = 0;
-  currentRow = 0;
+  currentBank = -1;
+  currentRow = -1;
+
 
 	//use numBankQueus below to create queue structure
 	size_t numBankQueues;
@@ -146,6 +147,15 @@ void CommandQueue::enqueue(BusPacket *newBusPacket)
 {
 	unsigned rank = newBusPacket->rank;
 	unsigned bank = newBusPacket->bank;
+
+	if (currentBank == -1)
+	{
+		currentBank = bank;
+	}
+	if (currentRow == -1)
+	{
+		currentRow = newBusPacket->row;
+	}
 	if (queuingStructure==PerRank)
 	{
 		queues[rank][0].push_back(newBusPacket);
@@ -715,13 +725,6 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			//make sure there is something there first
 			if (!queue.empty() && !((nextRank == refreshRank) && refreshWaiting))
 			{
-        //cout << "queue size: " << queue.size() << endl;
-        if ( queue.size() == 1 ) // base case to initialize currentBank & currentRow  //jgardea
-        {
-          currentBank = queue[0]->bank;
-          currentRow = queue[0]->row;
-        }
-        
 				//search from the beginning to find first issuable bus packet
 				unsigned next_bank = 0;
 				unsigned next_row = 0;
@@ -738,15 +741,19 @@ bool CommandQueue::pop(BusPacket **busPacket)
 						}
 					}
 				}
-        
-        if ( currentBank != next_bank && currentRow != next_row )
+				//cout << endl << endl << endl;
+				//cout << "Next is bank " << next_bank << " row " << next_row << " and has " << number_pending << " pending requests." << endl;
+        cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
+        if ( (currentBank != next_bank || currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) )
         {
           *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
           currentBank = next_bank;
           currentRow = next_row;
+          //cout << "running precharge..." << endl;
           return true;
 
         }
+        //cout << "\n\nnever running precharge...\n";
 
 				for (size_t i=0;i<queue.size();i++)
 				{

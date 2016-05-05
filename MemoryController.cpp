@@ -313,6 +313,16 @@ void MemoryController::update()
           }
         }
       }
+      // test what's in there......
+      std::cout << std::endl << std::endl << std::endl << std::endl;
+      for (unsigned i = 0; i < commandQueue.memRowAccessCounter.size(); ++i)
+      {
+      	for (unsigned j = 0; j < commandQueue.memRowAccessCounter[i].size(); ++j)
+      	{
+      		std::cout << "[deletion] Accessing bank " << i << " and row " << commandQueue.memRowAccessCounter[i][j].first << " currently has " << commandQueue.memRowAccessCounter[i][j].second << " pending requests." << std::endl;
+      	}
+      }
+      std::cout << std::endl << std::endl << std::endl << std::endl;
    }
 		
 		//
@@ -582,6 +592,17 @@ void MemoryController::update()
 				pair<unsigned, unsigned> tmp_pair = std::make_pair(newTransactionRow, ++tmp_counter);
 				commandQueue.memRowAccessCounter[newTransactionBank].push_back(tmp_pair);
 			}
+
+	  /*std::cout << std::endl << std::endl << std::endl << std::endl;
+      for (unsigned i = 0; i < commandQueue.memRowAccessCounter.size(); ++i)
+      {
+      	for (unsigned j = 0; j < commandQueue.memRowAccessCounter[i].size(); ++j)
+      	{
+      		std::cout << "[addition] Accessing bank " << i << " and row " << commandQueue.memRowAccessCounter[i][j].first << " currently has " << commandQueue.memRowAccessCounter[i][j].second << " pending requests." << std::endl;
+      	}
+      }
+      std::cout << std::endl << std::endl << std::endl << std::endl;*/
+
 
 			commandQueue.enqueue(ACTcommand);
 			commandQueue.enqueue(command);
