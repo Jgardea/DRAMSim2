@@ -1,19 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Gist
- @reeema3
- Unwatch 3
-  Star 0
- Fork 0 rfolk/DRAMSim2
- Code  Issues 0  Pull requests 0  Wiki  Pulse  Graphs
-Branch: master Find file Copy pathDRAMSim2/CommandQueue.cpp
-9010435  15 minutes ago
-@rfolk rfolk Adding scaffolding to implement Most Pending scheduler
-3 contributors @dramninjasUMD @Jgardea @rfolk
-RawBlameHistory     811 lines (750 sloc)  22.1 KB
 /*********************************************************************************
 *  Copyright (c) 2010-2011, Elliott Cooper-Balis
 *                             Paul Rosenfeld
@@ -563,6 +547,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 	}
 	else if (rowBufferPolicy == InOrder)
 	{
+		bool sendingREF = false;
 		bool foundIssuable = false;
 		if (refreshWaiting)
 		{
