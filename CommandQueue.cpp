@@ -670,7 +670,7 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
 		        currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
 		        tFAWCountdown[busPacket->rank].size() < 4)
 		{
-      rowBufferStats[busPacket->bank].second++;
+      rowBufferStats[busPacket->bank].second++; // row buffer hit
 			return true;
 		}
 		else

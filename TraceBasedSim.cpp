@@ -165,7 +165,7 @@ void *parseTraceFileLine(string &line, uint64_t &addr, enum TransactionType &tra
 	case k6:
 	{
 		spaceIndex = line.find_first_of(" ", 0);
-
+    cout << "spaceIndex: " << spaceIndex << endl;
 		addressStr = line.substr(0, spaceIndex);
 		previousIndex = spaceIndex;
 
@@ -247,6 +247,55 @@ void *parseTraceFileLine(string &line, uint64_t &addr, enum TransactionType &tra
 
 		break;
 	}
+  case parsec:
+  {
+    spaceIndex = line.find_first_of(" ", 0);
+
+    ccStr = line.substr(spaceIndex, line.find_first_of(" ", spaceIndex) - spaceIndex);
+    previousIndex = spaceIndex;
+
+		spaceIndex = line.find_first_not_of(" ", previousIndex);
+		cmdStr = line.substr(spaceIndex, line.find_first_of(" ", spaceIndex) - spaceIndex);
+		previousIndex = line.find_first_of(" ", spaceIndex);
+
+    spaceIndex = line.find_first_not_of(" ", previousIndex);
+		addressStr = line.substr(0, spaceIndex);
+		
+
+    if ( cmdStr.compare("R") == 0 )transType = DATA_WRITE;
+    else if ( cmdStr.compare("W") == 0 ) transType = DATA_READ;
+    else
+		{
+			ERROR("== Unknown Command : "<<cmdStr);
+			exit(0);
+		}
+		/*if (cmdStr.compare("P_MEM_WR")==0 ||
+		        cmdStr.compare("BOFF")==0)
+		{
+			transType = DATA_WRITE;
+		}
+		else if (cmdStr.compare("P_FETCH")==0 ||
+		         cmdStr.compare("P_MEM_RD")==0 ||
+		         cmdStr.compare("P_LOCK_RD")==0 ||
+		         cmdStr.compare("P_LOCK_WR")==0)
+		{
+			transType = DATA_READ;
+		}*/
+		
+
+		istringstream a(addressStr.substr(2));//gets rid of 0x
+		a>>hex>>addr;
+
+		//if this is set to false, clockCycle will remain at 0, and every line read from the trace
+		//  will be allowed to be issued
+		if (useClockCycle)
+		{
+			istringstream b(ccStr);
+			b>>clockCycle;
+		}
+		break;
+    
+  }
 	case misc:
 		spaceIndex = line.find_first_of(" ", spaceIndex+1);
 		if (spaceIndex == string::npos)
@@ -479,6 +528,10 @@ int main(int argc, char **argv)
 	{
 		traceType = misc;
 	}
+  else if (temp == "parsec")
+  {
+    traceType = parsec;
+  }
 	else
 	{
 		ERROR("== Unknown Tracefile Type : "<<temp);

@@ -146,6 +146,7 @@ enum TraceType
 {
 	k6,
 	mase,
+  parsec,
 	misc
 };
 
