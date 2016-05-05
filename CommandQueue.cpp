@@ -90,6 +90,13 @@ CommandQueue::CommandQueue(vector< vector<BankState> > &states, ostream &dramsim
 		}
 		queues.push_back(perBankQueue);
 	}
+
+	for (int i = 0; i < NUM_BANKS; ++i)
+	{
+		vector< pair<unsigned, unsigned> > row;
+		memRowAccessCounter.push_back(row);
+	}
+
   
   pair<int,int> bankRowBuffer;
 

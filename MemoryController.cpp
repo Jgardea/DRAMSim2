@@ -293,6 +293,19 @@ void MemoryController::update()
 			writeDataCountdown.push_back(WL);
 		}
 
+		// remove the row access counter
+		for (unsigned i = 0; i < commandQueue.memRowAccessCounter[poppedBusPacket->bank].size(); ++i)
+		{
+			if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].first == poppedBusPacket->row)
+			{
+				commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second--;
+				if (commandQueue.memRowAccessCounter[poppedBusPacket->bank][i].second == 0)
+				{
+					commandQueue.memRowAccessCounter[poppedBusPacket->bank].erase(commandQueue.memRowAccessCounter[poppedBusPacket->bank].begin() + i);
+				}
+			}
+		}
+
 		//
 		//update each bank's state based on the command that was just popped out of the command queue
 		//
@@ -566,6 +579,21 @@ void MemoryController::update()
 
 			commandQueue.enqueue(ACTcommand);
 			commandQueue.enqueue(command);
+
+			unsigned tmp_counter = 0;
+			for (unsigned i = 0; i < commandQueue.memRowAccessCounter[newTransactionBank].size(); ++i)
+			{
+				if (commandQueue.memRowAccessCounter[newTransactionBank][i].first == newTransactionRow)
+				{
+					commandQueue.memRowAccessCounter[newTransactionBank][i].second++;
+					tmp_counter = commandQueue.memRowAccessCounter[newTransactionBank][i].second;
+				}
+			}
+			if (tmp_counter == 0)
+			{
+				pair<unsigned, unsigned> tmp_pair = std::make_pair(newTransactionRow, ++tmp_counter);
+				commandQueue.memRowAccessCounter[newTransactionBank].push_back(tmp_pair);
+			}
 
 			// If we have a read, save the transaction so when the data comes back
 			// in a bus packet, we can staple it back into a transaction and return it
