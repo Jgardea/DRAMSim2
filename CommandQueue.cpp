@@ -410,7 +410,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				refreshWaiting = false;
 				sendingREForPRE = true;
 			}
-		}
+		} // refreshing
 
 		if (!sendingREForPRE)
 		{
