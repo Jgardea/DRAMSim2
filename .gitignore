@@ -12,3 +12,5 @@ system2.ini
 *.res
 # Mac Files
 .DS_Store
+# stupid results
+tmp.txt
