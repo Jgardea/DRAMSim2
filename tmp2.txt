@@ -1,0 +1,97 @@
+WARNING: Cannot create memory system with 2048MB, defaulting to minimum size of 4096MB
+ =======================================================
+ ============== Printing Statistics [id:0]==============
+   Total Return Transactions : 0 (0 bytes) aggregate average bandwidth 0.000GB/s
+      -Rank   0 : 
+        -Reads  : 0 (0 bytes)
+        -Writes : 0 (0 bytes)
+        -Bandwidth / Latency / RBHR (Bank 0): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 1): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 2): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 3): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 4): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 5): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 6): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 7): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+     -Total Avgerage Latency =  0.000 ns
+     -Total Hit Rate = nan Hits/Access
+ == Power Data for Rank        0
+   Average Power (watts)     : 0.000
+     -Background (watts)     : 0.000
+     -Act/Pre    (watts)     : 0.000
+     -Burst      (watts)     : 0.000
+     -Refresh    (watts)     : 0.000
+
+ == Pending Transactions : 0 (0)==
+==== Channel [0] ====
+ =======================================================
+ ============== Printing Statistics [id:0]==============
+   Total Return Transactions : 77 (4928 bytes) aggregate average bandwidth 4.893GB/s
+      -Rank   0 : 
+        -Reads  : 75 (4800 bytes)
+        -Writes : 2 (128 bytes)
+        -Bandwidth / Latency / RBHR (Bank 0): 0.699 GB/s	437.620 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 1): 0.508 GB/s	243.997 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 2): 0.572 GB/s	481.611 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 3): 0.000 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 4): 0.127 GB/s	0.000 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 5): 0.763 GB/s	265.141 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 6): 1.207 GB/s	367.005 ns	0.000  Hits/Access
+        -Bandwidth / Latency / RBHR (Bank 7): 1.017 GB/s	330.880 ns	0.000  Hits/Access
+     -Total Avgerage Latency =  265.782 ns
+     -Total Hit Rate = 0.000 Hits/Access
+ == Power Data for Rank        0
+   Average Power (watts)     : 1.500
+     -Background (watts)     : 0.489
+     -Act/Pre    (watts)     : 0.606
+     -Burst      (watts)     : 0.406
+     -Refresh    (watts)     : 0.000
+ ---  Latency list (44)
+       [lat] : #
+       [30-39] : 2
+       [50-59] : 1
+       [80-89] : 2
+       [90-99] : 1
+       [110-119] : 1
+       [130-139] : 2
+       [140-149] : 2
+       [180-189] : 3
+       [190-199] : 2
+       [220-229] : 2
+       [230-239] : 1
+       [240-249] : 1
+       [270-279] : 2
+       [280-289] : 2
+       [290-299] : 1
+       [320-329] : 3
+       [330-339] : 3
+       [340-349] : 2
+       [370-379] : 3
+       [380-389] : 2
+       [390-399] : 2
+       [410-419] : 1
+       [420-429] : 3
+       [430-439] : 2
+       [440-449] : 1
+       [450-459] : 2
+       [460-469] : 1
+       [470-479] : 1
+       [480-489] : 3
+       [490-499] : 1
+       [500-509] : 2
+       [520-529] : 2
+       [530-539] : 2
+       [540-549] : 1
+       [550-559] : 1
+       [570-579] : 2
+       [580-589] : 1
+       [590-599] : 1
+       [600-609] : 1
+       [620-629] : 2
+       [640-649] : 1
+       [650-659] : 1
+       [670-679] : 1
+       [690-699] : 2
+
+ == Pending Transactions : 17 (1000)==
+//// Channel [0] ////
