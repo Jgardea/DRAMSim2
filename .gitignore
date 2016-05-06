@@ -13,4 +13,4 @@ system2.ini
 # Mac Files
 .DS_Store
 # stupid results
-tmp.txt
+tmp*.txt
