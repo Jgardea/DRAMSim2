@@ -574,7 +574,7 @@ void MemoryController::update()
 					newTransactionBank, transaction->data, dramsim_log);
 
    
-      assert ( bpType == READ || bpType == WRITE); //jgardea
+      assert ( bpType == READ || bpType == WRITE || bpType == READ_P || bpType == WRITE_P ); //jgardea
 
       //TODO Not sure if counter are updated correctly
 
