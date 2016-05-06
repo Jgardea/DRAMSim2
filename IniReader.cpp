@@ -606,6 +606,14 @@ void IniReader::InitEnumsFromStrings()
 			DEBUG("ROW BUFFER: most pending");
 		}
 	}
+	else if (ROW_BUFFER_POLICY == "least_pending")
+	{
+		rowBufferPolicy = LeastPending;
+		if (DEBUG_INI_READER)
+		{
+			DEBUG("ROW BUFFER: least pending");
+		}
+	}
 	else
 	{
 		cout << "WARNING: unknown row buffer policy '"<<ROW_BUFFER_POLICY<<"'; valid values are 'open_page', 'close_page', or 'in_order', Defaulting to Close Page."<<endl;

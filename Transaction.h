@@ -75,7 +75,7 @@ public:
 			{
 				return READ_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending)
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending)
 			{
 				return READ; 
 			}
@@ -90,7 +90,7 @@ public:
 			{
 				return WRITE_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending)
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending)
 			{
 				return WRITE; 
 			}
