@@ -576,7 +576,45 @@ void MemoryController::update()
    
       assert ( bpType == READ || bpType == WRITE || bpType == READ_P || bpType == WRITE_P ); //jgardea
 
-      //TODO Not sure if counter are updated correctly
+      //commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 5;
+
+      // keep track of the active banks and rows
+
+      if ( commandQueue.activeRowCounters.find(newTransactionBank) != commandQueue.activeRowCounters.end() )
+      {
+         if ( commandQueue.activeRowCounters[newTransactionBank].find(newTransactionRow) != commandQueue.activeRowCounters[newTransactionBank].end() )
+         {
+            commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] ++;
+           // cout << "Found both bank and row" << endl;
+           // cout << "[" << newTransactionBank << "][" << newTransactionRow << "] = " << commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] << endl;
+         }
+         else 
+         {
+            commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 1; 
+            //cout << "Found only bank" << endl;
+         }
+      }
+      else
+      {
+        commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 1;
+        //cout << "Not found" << endl;
+      }
+
+      if ( 0 ) 
+      {
+        cout << "\nClock Cycle: " << currentClockCycle << endl;
+
+        for ( int i = 0; i < commandQueue.activeRowCounters.size(); i++ )
+        {
+          for( int j = 0; j < commandQueue.activeRowCounters[i].size(); j++)
+          {
+            cout << "[" << i << "][" << j << "] = " << commandQueue.activeRowCounters[i][j] << endl;
+          }
+        }
+        cout << endl;
+      }
+     // commandQueue.activeRowCoutners[newTransactionBank][newTransactionRow] = ;
+
 
       unsigned tmp_counter = 0;
 			for (unsigned i = 0; i < commandQueue.memRowAccessCounter[newTransactionBank].size(); ++i)
@@ -946,9 +984,9 @@ void MemoryController::printStats(bool finalStats)
 
       if ( isnan(averageLatency[SEQUENTIAL(r,j)]) ) averageLatency[SEQUENTIAL(r,j)] = 0;
 
-      PRINT( "        -Bandwidth / Latency / RBHR (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] 
+      PRINT( "        -Bandwidth / Latency / RBHR / Accesses (Bank " <<j<<"): " <<bandwidth[SEQUENTIAL(r,j)] 
               << " GB/s\t" << averageLatency[SEQUENTIAL(r,j)] << " ns\t" 
-              << (double) commandQueue.rowBufferStats[j].first/totalAccesses << "  Hits/Access" );
+            << (double) commandQueue.rowBufferStats[j].first/totalAccesses << "  Hits/Access\t" << totalAccesses << "  Accesses" );
 		}
    
         
@@ -1030,6 +1068,7 @@ void MemoryController::printStats(bool finalStats)
 				for (size_t j=0;j<NUM_BANKS;j++)
 				{
 					PRINT( "  b"<<j<<": "<<grandTotalBankAccesses[SEQUENTIAL(i,j)]);
+          PRINT( "  b"<<j<<": "<<grandTotalBankAccesses[j]);
 				}
 			}
 		}
