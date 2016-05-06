@@ -615,30 +615,30 @@ bool CommandQueue::pop(BusPacket **busPacket)
 			}
 		} // refreshWaiting
 
-    if ( sendingREF )
-    {
-      for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
-      {
-        for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
-        {
-          for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
-          {
-            size_t x = (i + cq_io_last_rank) % queues.size();
-            size_t y = (j + cq_io_last_bank) % queues[x].size();
-            size_t z = (k + cq_io_last_row) % queues[x][y].size();
-            if (isIssuable(queues[x][y][z]))
-            {
-              *busPacket = queues[x][y][z];
-              queues[x][y].erase(queues[x][y].begin() + z);
-              foundIssuable = true;
-              cq_io_last_rank = x;
-              cq_io_last_bank = y;
-              cq_io_last_row = z;
-            }
-          }
-        }
-      }
-    }  
+	    if ( sendingREF )
+	    {
+	      for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
+	      {
+	        for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
+	        {
+	          for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
+	          {
+	            size_t x = (i + cq_io_last_rank) % queues.size();
+	            size_t y = (j + cq_io_last_bank) % queues[x].size();
+	            size_t z = (k + cq_io_last_row) % queues[x][y].size();
+	            if (isIssuable(queues[x][y][z]))
+	            {
+	              *busPacket = queues[x][y][z];
+	              queues[x][y].erase(queues[x][y].begin() + z);
+	              foundIssuable = true;
+	              cq_io_last_rank = x;
+	              cq_io_last_bank = y;
+	              cq_io_last_row = z;
+	            }
+	          }
+	        }
+	      }
+	    }  
 		//if we couldn't find anything to send, return false
 		if (!foundIssuable) return false;
 	}
@@ -1113,7 +1113,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 				//cout << endl << endl << endl;
 				//cout << "Next is bank " << next_bank << " row " << next_row << " and has " << number_pending << " pending requests." << endl;
         //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-		if ( (currentBank != next_bank || currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
+		if ( (currentBank == next_bank && currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
         {
           //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
           //cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
