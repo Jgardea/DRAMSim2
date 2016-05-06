@@ -42,7 +42,7 @@
 //
 
 #include <utility>
-
+#include <map>
 #include "BusPacket.h"
 #include "BankState.h"
 #include "Transaction.h"
@@ -86,6 +86,9 @@ public:
 
 	// to count row accesses for use in Most Pending
 	vector < vector< pair<unsigned,unsigned> > > memRowAccessCounter;
+  map< unsigned, map<unsigned, int> > activeRowCounters;
+  bool PRE_ready;
+  BusPacket* PRE_packet;
 
 private:
 	void nextRankAndBank(unsigned &rank, unsigned &bank);
@@ -101,6 +104,8 @@ private:
 
   int currentBank; //jgardea
   int currentRow;
+
+  
 
 	vector< vector<unsigned> > tFAWCountdown;
 	vector< vector<unsigned> > rowAccessCounters;
