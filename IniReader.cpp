@@ -598,20 +598,36 @@ void IniReader::InitEnumsFromStrings()
 			DEBUG("ROW BUFFER: in order");
 		}
 	}
-	else if (ROW_BUFFER_POLICY == "most_pending")
+	else if (ROW_BUFFER_POLICY == "most_pending_open")
 	{
-		rowBufferPolicy = MostPending;
+		rowBufferPolicy = MostPendingOpen;
 		if (DEBUG_INI_READER)
 		{
-			DEBUG("ROW BUFFER: most pending");
+			DEBUG("ROW BUFFER: most pending open");
 		}
 	}
-	else if (ROW_BUFFER_POLICY == "least_pending")
+	else if (ROW_BUFFER_POLICY == "most_pending_closed")
 	{
-		rowBufferPolicy = LeastPending;
+		rowBufferPolicy = MostPendingClosed;
 		if (DEBUG_INI_READER)
 		{
-			DEBUG("ROW BUFFER: least pending");
+			DEBUG("ROW BUFFER: most pending closed");
+		}
+	}
+	else if (ROW_BUFFER_POLICY == "least_pending_open")
+	{
+		rowBufferPolicy = LeastPendingOpen;
+		if (DEBUG_INI_READER)
+		{
+			DEBUG("ROW BUFFER: least pending open");
+		}
+	}
+	else if (ROW_BUFFER_POLICY == "least_pending_closed")
+	{
+		rowBufferPolicy = LeastPendingClosed;
+		if (DEBUG_INI_READER)
+		{
+			DEBUG("ROW BUFFER: least pending closed");
 		}
 	}
 	else
