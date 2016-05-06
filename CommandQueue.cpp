@@ -949,7 +949,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
         {
           //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
           //cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
-          RowAccessCounters[0][currentBank]=0;
+          rowAccessCounters[0][currentBank]=0;
           *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
           currentBank = next_bank;
           currentRow = next_row;
