@@ -33,7 +33,7 @@ foreach policy  ("in_order" "open_page" "close_page" "most_pending" "least_pendi
         @ chan = $channel * 64
         foreach ra ( 4 32 )
          
-          ./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x8.ini -t ../input/parsec_${benchmark} -c 10000000 -o ROW_BUFFER_POLICY=${policy},NUM_BANKS=${banks},JEDEC_DATA_BUS_BITS=${chan} > ${sim_results}/stats/${policy}/${benchmark}_${policy}_b${banks}_c${channel}_ra${ra}.stats
+          ./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x8.ini -t ../input/parsec_${benchmark} -c 10000000 -o ROW_BUFFER_POLICY=${policy},NUM_BANKS=${banks},JEDEC_DATA_BUS_BITS=${chan},TOTAL_ROW_ACCESSES=${ra} > ${sim_results}/stats/${policy}/${benchmark}_${policy}_b${banks}_c${channel}_ra${ra}.stats
 
         end
 
