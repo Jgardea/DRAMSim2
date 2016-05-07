@@ -215,7 +215,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
      Otherwise, it starts looking for rows to close (in open page)
   */
 
-  if (rowBufferPolicy==ClosePage) //in order
+  if (rowBufferPolicy==InOrder) //in order
   {
     bool sendingREF = false;
     //if the memory controller set the flags signaling that we need to issue a refresh
@@ -558,7 +558,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
       }
     }
   }
-  else if (rowBufferPolicy == InOrder) //close
+  else if (rowBufferPolicy == ClosePage) //close
   {
     if( PRE_ready  && 
       (currentClockCycle >= bankStates[PRE_packet->rank][PRE_packet->bank].nextPrecharge) &&
