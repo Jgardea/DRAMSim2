@@ -69,7 +69,7 @@ public:
 	void printStats(bool finalStats = false);
 	void resetStats(); 
 
-
+  bool csv_file;
 	//fields
 	vector<Transaction *> transactionQueue;
 private:

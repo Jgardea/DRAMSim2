@@ -129,7 +129,8 @@ namespace DRAMSim {
 		// Functions
 		void finalize()
 		{
-			//TODO: tag unlikely
+      //output.flush();
+			/*//TODO: tag unlikely
 			if (!finalized)
 			{
 				for (unsigned i=0; i<fieldNames.size(); i++)
@@ -147,7 +148,7 @@ namespace DRAMSim {
 				}
 				idx=0; 
 				output << std::endl; 
-			}
+			}*/
 		}
 
 		// Constructor 

@@ -33,6 +33,7 @@
 // for directory operations 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cassert>
 
 #include "MultiChannelMemorySystem.h"
 #include "AddressMapping.h"
@@ -238,11 +239,11 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 			}
 
 			// create the directories if they don't exist 
-			mkdirIfNotExist(path);
-			path = path + traceFilename + "/";
-			mkdirIfNotExist(path);
-			path = path + deviceName + "/";
-			mkdirIfNotExist(path);
+			//mkdirIfNotExist(path);
+			//path = path + traceFilename + "/";
+			//mkdirIfNotExist(path);
+			//path = path + deviceName + "/";
+			//mkdirIfNotExist(path);
 
 			// finally, figure out the filename
 			string sched = "BtR";
@@ -258,6 +259,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 
 			/* I really don't see how "the C++ way" is better than snprintf()  */
 			out << (TOTAL_STORAGE>>10) << "GB." << NUM_CHANS << "Ch." << NUM_RANKS <<"R." <<ADDRESS_MAPPING_SCHEME<<"."<<ROW_BUFFER_POLICY<<"."<< TRANS_QUEUE_DEPTH<<"TQ."<<CMD_QUEUE_DEPTH<<"CQ."<<sched<<"."<<queue;
+
 		}
 		else //visFilename given
 		{
@@ -274,9 +276,16 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 
 		filename = FilenameWithNumberSuffix(filename, ".vis"); 
 		path.append(filename);
-		cerr << "writing vis file to " <<path<<endl;
 
+    string benchmark = traceFilename;
+    benchmark = benchmark.erase(0,7);
+    
+    out.str(" ");
+   
+    out << "../sim-results/vcs/" << ROW_BUFFER_POLICY << "/" << benchmark <<  "_" << ROW_BUFFER_POLICY << "_b" << NUM_BANKS << "_c" << JEDEC_DATA_BUS_BITS/64 << "_ra" << TOTAL_ROW_ACCESSES << ".vcs";
 
+    path = out.str();  
+    cerr << "writing vis file to " <<path<<endl;
 		visDataOut.open(path.c_str());
 		if (!visDataOut)
 		{
@@ -284,7 +293,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 			exit(-1);
 		}
 		//write out the ini config values for the visualizer tool
-		IniReader::WriteValuesOut(visDataOut);
+	//	IniReader::WriteValuesOut(visDataOut);
 
 	}
 	else

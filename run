@@ -4,11 +4,26 @@
 #inlcude benchmarks you want and just do ./run
 
 set sim_results = "../sim-results"
-mkdir ${sim_results}
+
+if (! -d ${sim_results} ) then
+      mkdir ${sim_results}
+endif
 
 foreach policy  ("in_order" "open_page" "close_page" "most_pending" "least_pending")
- 
-  mkdir ${sim_results}/${policy}
+
+    if (! -d ${sim_results}/stats ) then
+      mkdir ${sim_results}/stats/
+    endif
+    if (! -d ${sim_results}/vcs/ ) then
+      mkdir ${sim_results}/vcs/
+    endif
+    if (! -d ${sim_results}/stats/${policy} ) then 
+      mkdir ${sim_results}/stats/${policy}
+    endif
+    if (! -d ${sim_results}/vcs/${policy} ) then
+      mkdir ${sim_results}/vcs/${policy}
+    endif
+
   foreach benchmark ( "black" "stream" "freq" )
     
     foreach banks ( 8 16 )
@@ -18,7 +33,7 @@ foreach policy  ("in_order" "open_page" "close_page" "most_pending" "least_pendi
         @ chan = $channel * 64
         foreach ra ( 4 32 )
          
-          ./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x8.ini -t ../input/parsec_${benchmark} -c 10000000 -o ROW_BUFFER_POLICY=${policy},NUM_BANKS=${banks},JEDEC_DATA_BUS_BITS=${chan} > ${sim_results}/${policy}/${benchmark}_${policy}_c${channel}_ra${ra}.stats
+          ./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x8.ini -t ../input/parsec_${benchmark} -c 10000000 -o ROW_BUFFER_POLICY=${policy},NUM_BANKS=${banks},JEDEC_DATA_BUS_BITS=${chan} > ${sim_results}/stats/${policy}/${benchmark}_${policy}_b${banks}_c${channel}_ra${ra}.stats
 
         end
 

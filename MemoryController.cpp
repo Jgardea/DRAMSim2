@@ -110,6 +110,7 @@ MemoryController::MemoryController(MemorySystem *parent, CSVWriter &csvOut_, ost
 	{
 		refreshCountdown.push_back((int)((REFRESH_PERIOD/tCK)/NUM_RANKS)*(i+1));
 	}
+  csv_file = false;
 }
 
 //get a bus packet from either data or cmd bus
@@ -878,6 +879,7 @@ void MemoryController::resetStats()
 		totalWritesPerRank[i] = 0;
 	}
 }
+
 //prints statistics at the end of an epoch or  simulation
 void MemoryController::printStats(bool finalStats)
 {
@@ -992,28 +994,75 @@ void MemoryController::printStats(bool finalStats)
 
 		if (VIS_FILE_OUTPUT)
 		{
+      if ( csv_file )
+      {
+        csvOut.getOutputStream().flush(); 
+        csvOut.getOutputStream() << totalTransactions << "," 
+                                 << totalBandwidth << ","
+                                 << totalAvgLatency << ","
+                                 << (double)totalHits/totalRankAccesses << ",";
+        cerr << endl;
+        cerr << totalTransactions << "," 
+             << totalBandwidth << ","
+             << totalAvgLatency << ","
+             << (double)totalHits/totalRankAccesses << ",";
+
+
+        for( size_t b = 0; b < NUM_BANKS; b++)
+        {
+          int totalAccesses = commandQueue.rowBufferStats[b].first + commandQueue.rowBufferStats[b].second;
+
+          if ( totalAccesses == 0 )
+              totalAccesses = 1;
+
+          csvOut.getOutputStream()  << bandwidth[SEQUENTIAL(0,b)] <<  ","
+                                    << averageLatency[SEQUENTIAL(0,b)] << ","
+                                    << (double) commandQueue.rowBufferStats[b].first/totalAccesses << ",";
+
+          cerr << bandwidth[SEQUENTIAL(0,b)] <<  ","
+               << averageLatency[SEQUENTIAL(0,b)] << ","
+               << (double) commandQueue.rowBufferStats[b].first/totalAccesses << ",";
+          
+
+          if ( b == NUM_BANKS-1 )
+          { 
+            if ( totalAccesses == 1 ) totalAccesses = 0;
+            csvOut.getOutputStream() << totalAccesses;
+            cerr << totalAccesses << endl;
+          }else
+          {
+            csvOut.getOutputStream() << totalAccesses << ",";
+            cerr << totalAccesses << ",";
+          }
+                                    
+        }
+        cerr << endl;
+      }
+     csv_file = true; 
+      
+    /*  
 		//	cout << "c="<<myChannel<< " r="<<r<<"writing to csv out on cycle "<< currentClockCycle<<endl;
 			// write the vis file output
-			csvOut << CSVWriter::IndexedName("Background_Power",myChannel,r) <<backgroundPower[r];
-			csvOut << CSVWriter::IndexedName("ACT_PRE_Power",myChannel,r) << actprePower[r];
-			csvOut << CSVWriter::IndexedName("Burst_Power",myChannel,r) << burstPower[r];
-			csvOut << CSVWriter::IndexedName("Refresh_Power",myChannel,r) << refreshPower[r];
-			double totalRankBandwidth=0.0;
+			//csvOut << CSVWriter::IndexedName("Background_Power",myChannel,r) <<backgroundPower[r];
+			//csvOut << CSVWriter::IndexedName("ACT_PRE_Power",myChannel,r) << actprePower[r];
+			//csvOut << CSVWriter::IndexedName("Burst_Power",myChannel,r) << burstPower[r];
+			//csvOut << CSVWriter::IndexedName("Refresh_Power",myChannel,r) << refreshPower[r];
+			//double totalRankBandwidth=0.0;
 			for (size_t b=0; b<NUM_BANKS; b++)
 			{
-				csvOut << CSVWriter::IndexedName("Bandwidth",myChannel,r,b) << bandwidth[SEQUENTIAL(r,b)];
-				totalRankBandwidth += bandwidth[SEQUENTIAL(r,b)];
-				totalAggregateBandwidth += bandwidth[SEQUENTIAL(r,b)];
-				csvOut << CSVWriter::IndexedName("Average_Latency",myChannel,r,b) << averageLatency[SEQUENTIAL(r,b)];
+				//csvOut << CSVWriter::IndexedName("Bandwidth",myChannel,r,b) << bandwidth[SEQUENTIAL(r,b)];
+				//totalRankBandwidth += bandwidth[SEQUENTIAL(r,b)];
+				//totalAggregateBandwidth += bandwidth[SEQUENTIAL(r,b)];
+				//csvOut << CSVWriter::IndexedName("Average_Latency",myChannel,r,b) << averageLatency[SEQUENTIAL(r,b)];
 			}
-			csvOut << CSVWriter::IndexedName("Rank_Aggregate_Bandwidth",myChannel,r) << totalRankBandwidth; 
-			csvOut << CSVWriter::IndexedName("Rank_Average_Bandwidth",myChannel,r) << totalRankBandwidth/NUM_RANKS; 
+			//csvOut << CSVWriter::IndexedName("Rank_Aggregate_Bandwidth",myChannel,r) << totalRankBandwidth; 
+			//csvOut << CSVWriter::IndexedName("Rank_Average_Bandwidth",myChannel,r) << totalRankBandwidth/NUM_RANKS; */
 		}
 	}
 	if (VIS_FILE_OUTPUT)
 	{
-		csvOut << CSVWriter::IndexedName("Aggregate_Bandwidth",myChannel) << totalAggregateBandwidth;
-		csvOut << CSVWriter::IndexedName("Average_Bandwidth",myChannel) << totalAggregateBandwidth / (NUM_RANKS*NUM_BANKS);
+		//csvOut << CSVWriter::IndexedName("Aggregate_Bandwidth",myChannel) << totalAggregateBandwidth;
+		//csvOut << CSVWriter::IndexedName("Average_Bandwidth",myChannel) << totalAggregateBandwidth / (NUM_RANKS*NUM_BANKS);
 	}
 
 	// only print the latency histogram at the end of the simulation since it clogs the output too much to print every epoch
@@ -1023,7 +1072,7 @@ void MemoryController::printStats(bool finalStats)
 		PRINT( "       [lat] : #");
 		if (VIS_FILE_OUTPUT)
 		{
-			csvOut.getOutputStream() << "!!HISTOGRAM_DATA"<<endl;
+			//csvOut.getOutputStream() << "!!HISTOGRAM_DATA"<<endl;
 		}
 
 		map<unsigned,unsigned>::iterator it; //
@@ -1032,7 +1081,7 @@ void MemoryController::printStats(bool finalStats)
 			PRINT( "       ["<< it->first <<"-"<<it->first+(HISTOGRAM_BIN_SIZE-1)<<"] : "<< it->second );
 			if (VIS_FILE_OUTPUT)
 			{
-				csvOut.getOutputStream() << it->first <<"="<< it->second << endl;
+				//csvOut.getOutputStream() << it->first <<"="<< it->second << endl;
 			}
 		}
 		if (currentClockCycle % EPOCH_LENGTH == 0)
