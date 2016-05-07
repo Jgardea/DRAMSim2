@@ -86,11 +86,11 @@ public:
 			}
 			break;
 		case DATA_WRITE:
-			if (rowBufferPolicy == ClosePage )
+			if (rowBufferPolicy == InOrder )
 			{
 				return WRITE_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending || rowBufferPolicy == InOrder)
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending || rowBufferPolicy == ClosePage)
 			{
 				return WRITE; 
 			}
