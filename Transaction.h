@@ -71,11 +71,11 @@ public:
 		switch (transactionType)
 		{
 			case DATA_READ:
-			if (rowBufferPolicy == ClosePage )
+			if (rowBufferPolicy == InOrder )
 			{
 				return READ_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending ||rowBufferPolicy == InOrder )
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending ||rowBufferPolicy == ClosePage )
 			{
 				return READ; 
 			}

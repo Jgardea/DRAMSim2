@@ -1029,31 +1029,21 @@ bool CommandQueue::pop(BusPacket **busPacket)
             }
           }
         }
-        //cout << endl << endl << endl;
-        //cout << "Next is bank " << next_bank << " row " << next_row << " and has " << number_pending << " pending requests." << endl;
-        //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-    if ( (currentBank == next_bank && currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
+        if ( (currentBank == next_bank && currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
         {
-          //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-          //cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
           *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
           currentBank = next_bank;
           currentRow = next_row;
-          //cout << "running precharge..." << endl;
           return true;
 
         }
-        //cout << "\n\nnever running precharge...\n";
 
         for (size_t i=0;i<queue.size();i++)
         {
           BusPacket *packet = queue[i];
 
-          //cout << "packet->bank " << packet->bank << " next_bank " << next_bank << " packet->row " << packet->row << " next_row " << next_row << " isIssuable(packet) " << isIssuable(packet) << " packet type " << packet->busPacketType << endl;
-
           if (packet->bank == next_bank && packet->row == next_row && isIssuable(packet))
           {
-            //cout << " running the if statement " << endl;
             //check for dependencies
             bool dependencyFound = false;
             for (size_t j=0;j<i;j++)
@@ -1211,7 +1201,7 @@ bool CommandQueue::isIssuable(BusPacket *busPacket)
     if ((bankStates[busPacket->rank][busPacket->bank].currentBankState == Idle ||
             bankStates[busPacket->rank][busPacket->bank].currentBankState == Refreshing) &&
             currentClockCycle >= bankStates[busPacket->rank][busPacket->bank].nextActivate &&
-            tFAWCountdown[busPacket->rank].size() < TOTAL_ROW_ACCESSES) //TODO change this values
+            tFAWCountdown[busPacket->rank].size() < TOTAL_ROW_ACCESSES) 
     {
       rowBufferStats[busPacket->bank].second++; // row buffer miss
       return true;
