@@ -71,11 +71,11 @@ public:
 		switch (transactionType)
 		{
 			case DATA_READ:
-			if (rowBufferPolicy == ClosePage || rowBufferPolicy == MostPendingClosed || rowBufferPolicy == LeastPendingClosed)
+			if (rowBufferPolicy == ClosePage )
 			{
 				return READ_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPendingOpen || rowBufferPolicy == LeastPendingOpen ||rowBufferPolicy == InOrder )
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending ||rowBufferPolicy == InOrder )
 			{
 				return READ; 
 			}
@@ -86,11 +86,11 @@ public:
 			}
 			break;
 		case DATA_WRITE:
-			if (rowBufferPolicy == ClosePage || rowBufferPolicy == MostPendingClosed || rowBufferPolicy == LeastPendingClosed)
+			if (rowBufferPolicy == ClosePage )
 			{
 				return WRITE_P;
 			}
-			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPendingOpen || rowBufferPolicy == LeastPendingOpen || rowBufferPolicy == InOrder)
+			else if (rowBufferPolicy == OpenPage || rowBufferPolicy == MostPending || rowBufferPolicy == LeastPending || rowBufferPolicy == InOrder)
 			{
 				return WRITE; 
 			}
