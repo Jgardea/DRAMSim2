@@ -1,7 +1,34 @@
 #!/bin/tcsh 
 
-set BANKS=8
-set APP=$1
+#fix destination path if you want and,
+#inlcude benchmarks you want and just do ./run
 
-./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x${BANKS}.ini -t ../input/parsec_${APP} -c 10000000
+set sim_results = "../sim-results"
+mkdir ${sim_results}
+
+foreach policy  ("in_order" "open_page" "close_page" "most_pending" "least_pending")
+ 
+  mkdir ${sim_results}/${policy}
+  foreach benchmark ( "black" "stream" "freq" )
+    
+    foreach banks ( 8 16 )
+      
+      foreach channel ( 1 2 4 8)
+        
+        @ chan = $channel * 64
+        foreach ra ( 4 32 )
+         
+          ./DRAMSim -s system.ini -d ini/CS574_DDR3_micron_32M_16B_x8.ini -t ../input/parsec_${benchmark} -c 10000000 -o ROW_BUFFER_POLICY=${policy},NUM_BANKS=${banks},JEDEC_DATA_BUS_BITS=${chan} > ${sim_results}/${policy}/${benchmark}_${policy}_c${channel}_ra${ra}.stats
+
+        end
+
+      end
+
+    end
+
+  end
+
+end
+
+
 
