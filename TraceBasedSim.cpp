@@ -246,7 +246,7 @@ void *parseTraceFileLine(string &line, uint64_t &addr, enum TransactionType &tra
 
 		break;
 	}
-  case parsec:
+  case parsec:  //jgardea 
   {
     spaceIndex = line.find_first_of(" ", 0);
 
@@ -268,20 +268,7 @@ void *parseTraceFileLine(string &line, uint64_t &addr, enum TransactionType &tra
 			ERROR("== Unknown Command : "<<cmdStr);
 			exit(0);
 		}
-		/*if (cmdStr.compare("P_MEM_WR")==0 ||
-		        cmdStr.compare("BOFF")==0)
-		{
-			transType = DATA_WRITE;
-		}
-		else if (cmdStr.compare("P_FETCH")==0 ||
-		         cmdStr.compare("P_MEM_RD")==0 ||
-		         cmdStr.compare("P_LOCK_RD")==0 ||
-		         cmdStr.compare("P_LOCK_WR")==0)
-		{
-			transType = DATA_READ;
-		}*/
 		
-
 		istringstream a(addressStr.substr(2));//gets rid of 0x
 		a>>hex>>addr;
 
@@ -429,7 +416,7 @@ int main(int argc, char **argv)
 	
 	IniReader::OverrideMap *paramOverrides = NULL; 
 
-	unsigned numCycles=1000;
+	unsigned numCycles=10000000;
 	//getopt stuff
 	while (1)
 	{
@@ -527,7 +514,7 @@ int main(int argc, char **argv)
 	{
 		traceType = misc;
 	}
-  else if (temp == "parsec")
+  else if (temp == "parsec") //jgardea
   {
     traceType = parsec;
   }

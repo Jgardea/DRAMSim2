@@ -120,7 +120,6 @@ private:
 	unsigned colBitWidth;
 	unsigned byteOffsetWidth;
 
-
 	unsigned refreshRank;
 	
 public:

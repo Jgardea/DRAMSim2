@@ -215,7 +215,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
      Otherwise, it starts looking for rows to close (in open page)
   */
 
-  if (rowBufferPolicy==ClosePage)
+  if (rowBufferPolicy==ClosePage) //in order
   {
     bool sendingREF = false;
     //if the memory controller set the flags signaling that we need to issue a refresh
@@ -349,7 +349,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
       if (!foundIssuable) return false;
     }
   }
-  else if (rowBufferPolicy==OpenPage)
+  else if (rowBufferPolicy==OpenPage) 
   {
     bool sendingREForPRE = false;
     if (refreshWaiting)
@@ -558,7 +558,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
       }
     }
   }
-  else if (rowBufferPolicy == InOrder)
+  else if (rowBufferPolicy == InOrder) //close
   {
     if( PRE_ready  && 
       (currentClockCycle >= bankStates[PRE_packet->rank][PRE_packet->bank].nextPrecharge) &&
@@ -717,9 +717,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
                 )
                 {
                   PRE_ready = true;
-                  //rowAccessCounters[bank][row] = 0;
                   PRE_packet = new BusPacket(PRECHARGE, 0, 0, 0, rank, bank, 0, dramsim_log);
-
                   activeRowCounters[bank].erase(row);
                   if ( activeRowCounters[bank].empty() )
                   {
@@ -730,7 +728,6 @@ bool CommandQueue::pop(BusPacket **busPacket)
 
               foundIssuable = true;
               return true;
-              break;
             }
           }
         }
@@ -760,88 +757,7 @@ bool CommandQueue::pop(BusPacket **busPacket)
 
       return foundIssuable;
     }
-    // --------------------- Old In order -------------------
-    /*bool sendingREF = false;
-    bool foundIssuable = false;
-    if (refreshWaiting)
-    {
-      bool foundActiveOrTooEarly = false;
-      //look for an open bank
-      for (size_t b=0;b<NUM_BANKS;b++)
-      {
-        vector<BusPacket *> &queue = getCommandQueue(refreshRank,b);
-        //checks to make sure that all banks are idle
-        if (bankStates[refreshRank][b].currentBankState == RowActive)
-        {
-          foundActiveOrTooEarly = true;
-          //if the bank is open, make sure there is nothing else
-          // going there before we close it
-          for (size_t j=0;j<queue.size();j++)
-          {
-            BusPacket *packet = queue[j];
-            if (packet->row == bankStates[refreshRank][b].openRowAddress &&
-                packet->bank == b)
-            {
-              if (packet->busPacketType != ACTIVATE && isIssuable(packet))
-              {
-                *busPacket = packet;
-                queue.erase(queue.begin() + j);
-                sendingREF = true;
-              }
-              break;
-            }
-          }
-
-          break;
-        }
-        //  NOTE: checks nextActivate time for each bank to make sure tRP is being
-        //        satisfied.  the next ACT and next REF can be issued at the same
-        //        point in the future, so just use nextActivate field instead of
-        //        creating a nextRefresh field
-        else if (bankStates[refreshRank][b].nextActivate > currentClockCycle)
-        {
-          foundActiveOrTooEarly = true;
-          break;
-        }
-      }
-
-      //if there are no open banks and timing has been met, send out the refresh
-      //  reset flags and rank pointer
-      if (!foundActiveOrTooEarly && bankStates[refreshRank][0].currentBankState != PowerDown)
-      {
-        *busPacket = new BusPacket(REFRESH, 0, 0, 0, refreshRank, 0, 0, dramsim_log);
-        refreshRank = -1;
-        refreshWaiting = false;
-        sendingREF = true;
-      }
-    } // refreshWaiting
-  
-      if ( sendingREF )
-      {
-        for (size_t i = 0; i < queues.size() && !foundIssuable; ++i)
-        {
-          for (size_t j = 0; j < queues[i].size() && !foundIssuable; ++j)
-          {
-            for (size_t k = 0; k < queues[i][j].size() && !foundIssuable; ++k)
-            {
-              size_t x = (i + cq_io_last_rank) % queues.size();
-              size_t y = (j + cq_io_last_bank) % queues[x].size();
-              size_t z = (k + cq_io_last_row) % queues[x][y].size();
-              if (isIssuable(queues[x][y][z]))
-              {
-                *busPacket = queues[x][y][z];
-                queues[x][y].erase(queues[x][y].begin() + z);
-                foundIssuable = true;
-                cq_io_last_rank = x;
-                cq_io_last_bank = y;
-                cq_io_last_row = z;
-              }
-            }
-          }
-        }
-      }  
-    //if we couldn't find anything to send, return false
-    if (!foundIssuable) return false;*/
+    
   }
   else if (rowBufferPolicy == MostPendingOpen)
   {
@@ -942,32 +858,24 @@ bool CommandQueue::pop(BusPacket **busPacket)
             }
           }
         }
-        //cout << endl << endl << endl;
-        //cout << "Next is bank " << next_bank << " row " << next_row << " and has " << number_pending << " pending requests." << endl;
-        //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-    if ( (currentBank == next_bank && currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
+        
+        if ( (currentBank == next_bank && currentRow != next_row) && (bankStates[0][currentBank].currentBankState == RowActive) && (currentClockCycle >= bankStates[0][currentBank].nextPrecharge))
         {
-          //cout << "currentBank " << currentBank << " next_bank " << next_bank << " currentRow " << currentRow << " next_row " << next_row << endl;
-          //cout << " currentBankState " << bankStates[0][currentBank].currentBankState << " RowActive " << RowActive << endl;
+          
           rowAccessCounters[0][currentBank]=0;
           *busPacket = new BusPacket(PRECHARGE, 0, 0, 0, 0, currentBank , 0, dramsim_log);
           currentBank = next_bank;
           currentRow = next_row;
-          //cout << "running precharge..." << endl;
           return true;
 
         }
-        //cout << "\n\nnever running precharge...\n";
 
         for (size_t i=0;i<queue.size();i++)
         {
           BusPacket *packet = queue[i];
 
-          //cout << "packet->bank " << packet->bank << " next_bank " << next_bank << " packet->row " << packet->row << " next_row " << next_row << " isIssuable(packet) " << isIssuable(packet) << " packet type " << packet->busPacketType << endl;
-
           if (packet->bank == next_bank && packet->row == next_row && isIssuable(packet))
           {
-            //cout << " running the if statement " << endl;
             //check for dependencies
             bool dependencyFound = false;
             for (size_t j=0;j<i;j++)
@@ -990,10 +898,9 @@ bool CommandQueue::pop(BusPacket **busPacket)
             //  that activate as well (check i>0 because if i==0 then theres nothing before it)
             if (i>0 && queue[i-1]->busPacketType == ACTIVATE)
             {
-                      // if we issued the read/write operation before the activate command 
-                      // then the row was already open. Row Buffer hit //jgardea
-                      rowBufferStats[packet->bank].first++;
-
+              // if we issued the read/write operation before the activate command 
+              // then the row was already open. Row Buffer hit //jgardea
+              rowBufferStats[packet->bank].first++;
               rowAccessCounters[(*busPacket)->rank][(*busPacket)->bank]++;
               // i is being returned, but i-1 is being thrown away, so must delete it here 
               delete (queue[i-1]);

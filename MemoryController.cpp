@@ -294,10 +294,7 @@ void MemoryController::update()
 			writeDataCountdown.push_back(WL);
 		}
     
-		//cout << "Bank: " << poppedBusPacket->bank << endl;
-    //cout << "Row: " << poppedBusPacket->row << endl;
-    
-    // remove the row access counter
+	 // remove the row access counter
 
    int packetType = poppedBusPacket->busPacketType;
 
@@ -475,12 +472,10 @@ void MemoryController::update()
 
 				break;
 			case PRECHARGE:
-        //cout << "Handling PRECHARGE" << endl;
 				bankStates[rank][bank].currentBankState = Precharging;
 				bankStates[rank][bank].lastCommand = PRECHARGE;
 				bankStates[rank][bank].stateChangeCountdown = tRP;
 				bankStates[rank][bank].nextActivate = max(currentClockCycle + tRP, bankStates[rank][bank].nextActivate);
-        //cout << "Got here " <<  endl;
 				break;
 			case REFRESH:
 				//add energy to account for total
@@ -576,31 +571,25 @@ void MemoryController::update()
    
       assert ( bpType == READ || bpType == WRITE || bpType == READ_P || bpType == WRITE_P ); //jgardea
 
-      //commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 5;
-
-      // keep track of the active banks and rows
+      // Once a command is created, look to see if we have a counter for that Bank and Row
 
       if ( commandQueue.activeRowCounters.find(newTransactionBank) != commandQueue.activeRowCounters.end() )
       {
          if ( commandQueue.activeRowCounters[newTransactionBank].find(newTransactionRow) != commandQueue.activeRowCounters[newTransactionBank].end() )
          {
             commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] ++;
-           // cout << "Found both bank and row" << endl;
-           // cout << "[" << newTransactionBank << "][" << newTransactionRow << "] = " << commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] << endl;
          }
          else 
          {
             commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 1; 
-            //cout << "Found only bank" << endl;
          }
       }
       else
       {
         commandQueue.activeRowCounters[newTransactionBank][newTransactionRow] = 1;
-        //cout << "Not found" << endl;
       }
 
-      if ( 0 ) 
+      if ( 0 ) // DEBUGING  
       {
         cout << "\nClock Cycle: " << currentClockCycle << endl;
 
@@ -613,8 +602,6 @@ void MemoryController::update()
         }
         cout << endl;
       }
-     // commandQueue.activeRowCoutners[newTransactionBank][newTransactionRow] = ;
-
 
       unsigned tmp_counter = 0;
 			for (unsigned i = 0; i < commandQueue.memRowAccessCounter[newTransactionBank].size(); ++i)
@@ -631,18 +618,7 @@ void MemoryController::update()
 				commandQueue.memRowAccessCounter[newTransactionBank].push_back(tmp_pair);
 			}
 
-	  /*std::cout << std::endl << std::endl << std::endl << std::endl;
-      for (unsigned i = 0; i < commandQueue.memRowAccessCounter.size(); ++i)
-      {
-      	for (unsigned j = 0; j < commandQueue.memRowAccessCounter[i].size(); ++j)
-      	{
-      		std::cout << "[addition] Accessing bank " << i << " and row " << commandQueue.memRowAccessCounter[i][j].first << " currently has " << commandQueue.memRowAccessCounter[i][j].second << " pending requests." << std::endl;
-      	}
-      }
-      std::cout << std::endl << std::endl << std::endl << std::endl;*/
-
-
-			commandQueue.enqueue(ACTcommand);
+	  	commandQueue.enqueue(ACTcommand);
 			commandQueue.enqueue(command);
 
 			
