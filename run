@@ -1,4 +1,4 @@
-#!/bin/tcsh 
+#!/bin/tcsh jgardea 
 
 #fix destination path if you want and,
 #inlcude benchmarks you want and just do ./run

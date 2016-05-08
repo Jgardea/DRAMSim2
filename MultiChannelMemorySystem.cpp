@@ -238,13 +238,6 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 				//path = pwd + "/" + path;
 			}
 
-			// create the directories if they don't exist 
-			//mkdirIfNotExist(path);
-			//path = path + traceFilename + "/";
-			//mkdirIfNotExist(path);
-			//path = path + deviceName + "/";
-			//mkdirIfNotExist(path);
-
 			// finally, figure out the filename
 			string sched = "BtR";
 			string queue = "pRank";
@@ -277,6 +270,9 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
 		filename = FilenameWithNumberSuffix(filename, ".vis"); 
 		path.append(filename);
 
+    // ------------------- jgardea
+    // compute the output csv file name
+
     string benchmark = traceFilename;
     benchmark = benchmark.erase(0,7);
     
@@ -285,6 +281,7 @@ void MultiChannelMemorySystem::InitOutputFiles(string traceFilename)
     out << "../sim-results/vcs/" << ROW_BUFFER_POLICY << "/" << benchmark <<  "_" << ROW_BUFFER_POLICY << "_b" << NUM_BANKS << "_c" << JEDEC_DATA_BUS_BITS/64 << "_ra" << TOTAL_ROW_ACCESSES << ".vcs";
 
     path = out.str();  
+
     cerr << "writing vis file to " <<path<<endl;
 		visDataOut.open(path.c_str());
 		if (!visDataOut)

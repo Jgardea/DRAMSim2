@@ -1038,33 +1038,9 @@ void MemoryController::printStats(bool finalStats)
         }
         cerr << endl;
       }
-     csv_file = true; 
-      
-    /*  
-		//	cout << "c="<<myChannel<< " r="<<r<<"writing to csv out on cycle "<< currentClockCycle<<endl;
-			// write the vis file output
-			//csvOut << CSVWriter::IndexedName("Background_Power",myChannel,r) <<backgroundPower[r];
-			//csvOut << CSVWriter::IndexedName("ACT_PRE_Power",myChannel,r) << actprePower[r];
-			//csvOut << CSVWriter::IndexedName("Burst_Power",myChannel,r) << burstPower[r];
-			//csvOut << CSVWriter::IndexedName("Refresh_Power",myChannel,r) << refreshPower[r];
-			//double totalRankBandwidth=0.0;
-			for (size_t b=0; b<NUM_BANKS; b++)
-			{
-				//csvOut << CSVWriter::IndexedName("Bandwidth",myChannel,r,b) << bandwidth[SEQUENTIAL(r,b)];
-				//totalRankBandwidth += bandwidth[SEQUENTIAL(r,b)];
-				//totalAggregateBandwidth += bandwidth[SEQUENTIAL(r,b)];
-				//csvOut << CSVWriter::IndexedName("Average_Latency",myChannel,r,b) << averageLatency[SEQUENTIAL(r,b)];
-			}
-			//csvOut << CSVWriter::IndexedName("Rank_Aggregate_Bandwidth",myChannel,r) << totalRankBandwidth; 
-			//csvOut << CSVWriter::IndexedName("Rank_Average_Bandwidth",myChannel,r) << totalRankBandwidth/NUM_RANKS; */
-		}
-	}
-	if (VIS_FILE_OUTPUT)
-	{
-		//csvOut << CSVWriter::IndexedName("Aggregate_Bandwidth",myChannel) << totalAggregateBandwidth;
-		//csvOut << CSVWriter::IndexedName("Average_Bandwidth",myChannel) << totalAggregateBandwidth / (NUM_RANKS*NUM_BANKS);
-	}
-
+      csv_file = true; 
+    }
+  }    
 	// only print the latency histogram at the end of the simulation since it clogs the output too much to print every epoch
 	if (finalStats)
 	{

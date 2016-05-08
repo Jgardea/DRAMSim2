@@ -129,26 +129,7 @@ namespace DRAMSim {
 		// Functions
 		void finalize()
 		{
-      //output.flush();
-			/*//TODO: tag unlikely
-			if (!finalized)
-			{
-				for (unsigned i=0; i<fieldNames.size(); i++)
-				{
-					output << fieldNames[i] << ",";
-				}
-				output << std::endl << std::flush;
-				finalized=true; 
-			}
-			else
-			{
-				if (idx < fieldNames.size()) 
-				{
-					printf(" Number of fields doesn't match values (fields=%u, values=%u), check each value has a field name before it\n", idx, (unsigned)fieldNames.size());
-				}
-				idx=0; 
-				output << std::endl; 
-			}*/
+     // deleted this funtion to format csv to ouput our values of interes // jgardea 
 		}
 
 		// Constructor 
